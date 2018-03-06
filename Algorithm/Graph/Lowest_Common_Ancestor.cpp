@@ -27,8 +27,8 @@ struct LowestCommonAncestor{
 	
 	void build(){
 		dfs(0);
-		REP(k, 0, logN - 1){
-			REP(i, 0, N){
+		for(int k = 0; k < logN - 1; k++){
+			for(int i = 0; i < N; i++){
 				if(parent[k][i] < 0) parent[k + 1][i] = -1;
 				else parent[k + 1][i] = parent[k][parent[k][i]];
 			}
@@ -39,10 +39,14 @@ struct LowestCommonAncestor{
 		if(!built) build(); built = true;
 		if(depth[u] > depth[v]) swap(u, v);
 		
-		REP(k, 0, logN) if(((depth[v] - depth[u]) >> k) & 1) v = parent[k][v];	
+		for(int k = 0; k < logN; k++){
+			if(((depth[v] - depth[u]) >> k) & 1){
+				v = parent[k][v];
+			}
+		}
 		if(u == v) return u;
 		
-		RREP(k, logN - 1, 0){
+		for(int k = logN - 1; k >= 0; k--){
 			if(parent[k][u] == parent[k][v]) continue;
 			u = parent[k][u];
 			v = parent[k][v];			
