@@ -1,22 +1,21 @@
 struct UnionFind{
-	vector<int> data;
-
-	UnionFind(int sz){
-		data.assign(sz, -1);
+	std::vector<int> data;
+	
+	UnionFind(int n){
+		data.assign(n, -1);
 	}
 	
-	void unite(int x, int y){
+	bool unite(int x, int y){
 		x = find(x); y = find(y);
-		if(x == y) return ;
-		if(data[x] > data[y]) swap(x, y);
+		if(x == y) return false;
+		if(data[x] > data[y]) std::swap(x, y);
 		data[x] += data[y];
 		data[y] = x;
+		return true;
 	}
 	
 	bool same(int x, int y){
-		x = find(x); y = find(y);
-		if(x == y) return true;
-		else return false;
+		return find(x) == find(y);
 	}
 	
 	int find(int k){
@@ -28,3 +27,4 @@ struct UnionFind{
 		return -data[find(k)];
 	}
 };
+
