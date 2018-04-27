@@ -7,11 +7,11 @@ struct Dinic{
 	};
 	
 	const T INF;
-	vector<vector<edge>> g;
-	vector<T> min_cost;
-	vector<int> itr;
+	std::vector<std::vector<edge>> g;
+	std::vector<T> min_cost;
+	std::vector<int> itr;
 	
-	Dinic(int n) : INF(numeric_limits<T>::max()){
+	Dinic(int n) : INF(std::numeric_limits<T>::max()){
 		g.resize(n);
 	}
 	
@@ -22,7 +22,7 @@ struct Dinic{
 	
 	bool bfs(int s, int t){
 		min_cost.assign(g.size(), -1);
-		queue<int> qu; qu.push(s); min_cost[s] = 0;
+		std::queue<int> qu; qu.push(s); min_cost[s] = 0;
 		
 		while(!qu.empty()){
 			auto p = qu.front(); qu.pop();
@@ -43,7 +43,7 @@ struct Dinic{
 			edge &e = g[idx][i];
 			
 			if(e.cap <= 0 or min_cost[idx] >= min_cost[e.to]) continue;
-			T d = dfs(e.to, t, min(flow, e.cap));
+			T d = dfs(e.to, t, std::min(flow, e.cap));
 			if(d > 0){
 				e.cap -= d;
 				g[e.to][e.rev].cap += d;
