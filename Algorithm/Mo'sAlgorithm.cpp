@@ -22,11 +22,8 @@ class Mo {
 		sort(begin(queries), end(queries), [&](Query a, Query b) {
 			const int bucketA = a.left / sqrtQ, bucketB = b.left / sqrtQ;
 			if(bucketA == bucketB) {
-				if(bucketA & 1) {
-					return a.right > b.right;
-				} else {
-					return a.right < b.right;
-				}
+				if(bucketA & 1) return a.right > b.right;
+				return a.right < b.right;
 			}
 			return bucketA < bucketB;
 		});
@@ -37,8 +34,7 @@ class Mo {
 		queries.push_back(Query(left, right, (int)queries.size()));
 	}
 	inline int process() {
-		static int left = 0, right = 0;
-		static int index = 0;
+		static int left = 0, right = 0, index = 0;
 		if(!index) build(getSqrt(queries.size()));
 		
 		Query q = queries[index++];
