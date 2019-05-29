@@ -1,66 +1,40 @@
 template<typename Monoid>
 class SegmentTree {
+	std::vector<Monoid> data;
+	size_t sz;
+	
 	using F = std::function<Monoid(Monoid, Monoid)>;
+	
 	const F f;
-	const Monoid M1;
-	
-	std::vector<Monoid> seg;
-	int sz;
-	
-	bool built;
-	
-	private:
-	void set(int k, const Monoid x) {
-		built = false;
-		seg[k + sz] = x;
-	}
-	void build() {
-		if(built) return;
-		built = true;
-		for(int k = sz - 1; k > 0; k--) {
-			seg[k] = f(seg[2 * k + 0], seg[2 * k + 1]);
-		}
-	}
+	const Monoid E;
 	
 	public:
-	SegmentTree(int n, const F f, const Monoid &M1) : f(f), M1(M1) {
+	SegmentTree(const size_t n, const F f, const Monoid E) : f(f), E(E) {
 		sz = 1;
-		built = true;
 		while(sz < n) sz <<= 1;
-		seg.assign(sz * 2, M1);
+		data.assign(sz << 1, E);
 	}
-	SegmentTree(std::vector<Monoid> array, const F f, const Monoid &M1) : f(f), M1(M1) {
-		sz = 1;
-		built = true;
-		while(sz < array.size()) sz <<= 1;
-		seg.assign(sz * 2, M1);
-		update(array);
+	void set(int k, const Monoid x) {
+		data[k + sz] = x;
 	}
-	bool update(int k, Monoid x) {
-		if(k > sz) return false;		
+	void build() {
+		for(int k = sz - 1; k > 0; k--) data[k] = f(data[2 * k + 0], data[2 * k + 1]);
+	}
+	void update(int k, const Monoid x) {
 		k += sz;
-		seg[k] = x;
-		while(k >>= 1) {
-			seg[k] = f(seg[2 * k + 0], seg[2 * k + 1]);
-		}
-		return true;
+		data[k] = x;
+		
+		while(k >>= 1) data[k] = f(data[k << 1 ^ 0], data[k << 1 ^ 1]);
 	}
-	bool update(std::vector<Monoid> array) {
-		if(array.size() > sz) return false;
-		for(int i = 0; i < array.size(); i++) set(i , array[i]);
-		build();
-		return true;
-	}
-	Monoid get(int a, int b) {
-		build();
-		Monoid L = M1, R = M1;
+	Monoid query(int a, int b) {
+		Monoid L = E, R = E;
 		for(a += sz, b += sz; a < b; a >>= 1, b >>= 1) {
-			if(a & 1) L = f(L, seg[a++]);
-			if(b & 1) R = f(seg[--b], R);
+			if(a & 1) L = f(L, data[a++]);
+			if(b & 1) R = f(data[--b], R);
 		}
 		return f(L, R);
 	}
-	Monoid operator[](const int k) const {
-		return seg[k + sz];
+	const Monoid operator[](const int k) const {
+		return data[k + sz];
 	}
 };

@@ -29,9 +29,6 @@ class LazySegmentTree {
 	void build() {
 		for(int k = sz - 1; k > 0; k--) data[k] = f(data[k << 1 ^ 0], data[k << 1 ^ 1]);
 	}
-	Monoid query(int a, int b) {
-		return query(a, b, 1, 0, sz);
-	}
 	void update(int a, int b, OperatorMonoid x) {
 		update(a, b, 1, 0, sz, x);
 	}
@@ -44,6 +41,9 @@ class LazySegmentTree {
 		k += sz;
 		data[k] = x;
 		while(k >>= 1) data[k] = f(data[k << 1 ^ 0], data[k << 1 ^ 1]);
+	}
+	Monoid query(int a, int b) {
+		return query(a, b, 1, 0, sz);
 	}
 	Monoid operator[](int k) {
 		return query(k, k + 1);
@@ -58,15 +58,6 @@ class LazySegmentTree {
 		data[k] = g(data[k], p(lazy[k], len));
 		lazy[k] = OE;
 	}
-	Monoid query(int a, int b, int k, int l, int r) {
-		propagate(k, r - l);
-		if(b <= l || r <= a) return E;
-		if(a <= l && r <= b) return data[k];
-		
-		Monoid LeftValue  = query(a, b, k << 1 ^ 0, l, (l + r) >> 1); 
-		Monoid RightValue = query(a, b, k << 1 ^ 1, (l + r) >> 1, r);
-		return f(LeftValue, RightValue);
-	}
 	void update(int a, int b, int k, int l, int r, OperatorMonoid x) {
 		propagate(k, r - l);
 		if(b <= l || r <= a) return;
@@ -80,6 +71,15 @@ class LazySegmentTree {
 		update(a, b, k << 1 ^ 1, (l + r) >> 1, r, x);
 		data[k] = f(data[k << 1 ^ 0], data[k << 1 ^ 1]);
 	}
+	Monoid query(int a, int b, int k, int l, int r) {
+		propagate(k, r - l);
+		if(b <= l || r <= a) return E;
+		if(a <= l && r <= b) return data[k];
+		
+		Monoid LeftValue  = query(a, b, k << 1 ^ 0, l, (l + r) >> 1); 
+		Monoid RightValue = query(a, b, k << 1 ^ 1, (l + r) >> 1, r);
+		return f(LeftValue, RightValue);
+	}	
 };
 
 // f : Monoid 同士の合成
