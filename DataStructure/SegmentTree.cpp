@@ -20,9 +20,15 @@ class SegmentTree {
 	void build() {
 		for(int k = sz - 1; k > 0; k--) data[k] = f(data[2 * k + 0], data[2 * k + 1]);
 	}
-	void update(int k, const Monoid x) {
+	void change(int k, const Monoid x) {
 		k += sz;
 		data[k] = x;
+		
+		while(k >>= 1) data[k] = f(data[k << 1 ^ 0], data[k << 1 ^ 1]);
+	}
+	void update(int k, const Monoid x) {
+		k += sz;
+		data[k] = f(data[k], x);
 		
 		while(k >>= 1) data[k] = f(data[k << 1 ^ 0], data[k << 1 ^ 1]);
 	}
